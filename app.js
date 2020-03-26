@@ -3,9 +3,11 @@ const app = express();
 const fileUpload = require("express-fileupload");
 const AppError = require("./util/appError")
 const globalError = require("./controllers/errorController")
+const cors = require("cors");
 
 app.use(express.json({extended:false}))
 app.use(fileUpload())
+app.use(cors())
 app.use(express.static("upload/"))
 app.get('/',(req,res) => (res.send("APP IS RUNNING")));
 app.use('/api/store', require("./routes/api/store"))
