@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon server.js",
-    "prod": "nodemon server.js"
+    "server": "nodemon server.js"
   },
   "keywords": [
     "Ecommerce"
