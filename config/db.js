@@ -3,7 +3,7 @@ const config = require('config');
 const db = config.get("mongoURI");
 
 const dbConnect = async () => {
-    const DB = process.env.NODE_ENV === "production" ? 
+    const DB = process.env.NODE_ENV == "production" ? 
         process.env.DB_CON.replace("<PASSWORD>",process.env.DB_PASSWORD) : 
         process.env.LOCAL_DB
 

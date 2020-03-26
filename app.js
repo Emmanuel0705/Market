@@ -15,7 +15,7 @@ app.use('/api/auth', require("./routes/api/auth"))
 app.use('/api/good', require("./routes/api/good"))
 app.use('/api/category', require("./routes/api/category"))
 app.use("/api/search", require("./routes/api/search"))
-// app.use("/api/newsletter", require("./routes/api/newsletter"))
+app.use("/api/newsletter", require("./routes/api/newsletter"))
 app.all("*", (req,res,next) => {
     const err = new AppError(`Cant find ${req.originalUrl} on this server`,404)
     next(err)

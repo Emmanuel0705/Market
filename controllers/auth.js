@@ -76,7 +76,7 @@ exports.registerUser = catchAsync(async (req,res,next) => {
     }
     
     //set cookie to https in production
-    if(process.env.NODE_ENV === "production") cookieOptions.secure = true
+    // if(process.env.NODE_ENV === "production") cookieOptions.secure = true
 
     //send jwt as cookie
     res.cookie("jwt",token,cookieOptions).json({token})
