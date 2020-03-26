@@ -14,13 +14,15 @@ exports.getStores = catchAsync(async (req,res,next) => {
       .limitField()
       .paginate()
       .search();
-    const stores = await features.query;
+    const stores = await features.query.populate("user",['username','email']);
     res.status(200).json(stores)
 })
 
 // fetch store by id
 exports.getStoreById = catchAsync(async (req,res,next) => {
-    let store = await Store.findById(req.params.id).select("-password");
+    let store = await Store.findById(req.params.id)
+      .select("-password")
+      .populate("user",['username','email']);
     if(!store){
         return next(new AppError("store not found",404))
     }
@@ -51,7 +53,7 @@ exports.createStore = catchAsync(async (req,res,next) => {
     if(req.body.description) store.description = req.body.description
     if(req.body.address) store.address = req.body.address
     if(req.body.name) store.name = req.body.name
-    store.userId = req.user.id
+    store.user = req.user.id
     console.log(store)
     const newStore = new Store(store)
      await newStore.save()

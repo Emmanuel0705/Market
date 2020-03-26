@@ -45,10 +45,14 @@ exports.getGoodById = catchAsync(async (req,res,next) => {
 // request type => Post
 exports.addGood = catchAsync(async (req,res,next) => {
     const store = await Store.findById(req.params.storeId)
-    if(store.userId !== req.user.id){
-        console.log(store.userId, req.user.id)
+    if(!store){
+        return next(new AppError("Invalid Store Id",501))
+    }
+
+    if(store.user.toString() !== req.user.id){
         return next(new AppError("Unatorized",501))
     }
+
     if(req.files){
         let imageName = [];
         req.body.images = []; 
@@ -99,11 +103,12 @@ exports.addGood = catchAsync(async (req,res,next) => {
     req.body.store = req.params.storeId
     const good = new Good(req.body);
     if(await good.save()){
+        const category = await Category.findOne({name:req.body.category})
+        if(!category) return next(new AppError(`Category ${req.body.category} deoes not exits`,400) )
         await Category.findOneAndUpdate(
             {name:req.body.category},{ $inc:{numOfGoods:1}},{returnNewDocument:true}
         )
 
-        const category = await Category.findOne({name:req.body.category})
         const brandInd = category.brand.map(cat => cat.name.toLowerCase())
         .indexOf(req.body.brand.toLowerCase())
         if(brandInd === -1){

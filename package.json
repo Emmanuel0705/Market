@@ -4,8 +4,9 @@
   "description": "An ecommerce goods marketing app",
   "main": "index.js",
   "scripts": {
-    "start": "node server",
-    "server": "nodemon server"
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "prod": "nodemon server.js"
   },
   "keywords": [
     "Ecommerce"
