@@ -44,7 +44,11 @@ exports.getGoodById = catchAsync(async (req,res,next) => {
 //description => Add New Good
 // request type => Post
 exports.addGood = catchAsync(async (req,res,next) => {
-    
+    const store = await Store.findById(req.params.storeId)
+    if(store.userId !== req.user.id){
+        console.log(store.userId, req.user.id)
+        return next(new AppError("Unatorized",501))
+    }
     if(req.files){
         let imageName = [];
         req.body.images = []; 
@@ -71,9 +75,7 @@ exports.addGood = catchAsync(async (req,res,next) => {
             });
                             
         }else{
-
-            // ** multiple image uploading 
-            
+            // ** multiple image uploading            
             if(!req.files.image.mimetype.startsWith('image')){
                 return next(new AppError("file selected must be an image",500))
             }
@@ -94,7 +96,7 @@ exports.addGood = catchAsync(async (req,res,next) => {
     if(req.body.availableColor){
         req.body.availableColor = req.body.availableColor.split(",").map(color => color.trim())
     }
-    req.body.store = req.store.id
+    req.body.store = req.params.storeId
     const good = new Good(req.body);
     if(await good.save()){
         await Category.findOneAndUpdate(

@@ -5,10 +5,20 @@ const config = require('config')
 const {validationResult} = require("express-validator")
 const catchAsync = require("../util/catchAsync")
 const AppError = require("../util/appError")
+const User = require("../model/User")
 
 // jwt signin function
 const jwtSign = id => {
-     return jwt.sign({id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXP})
+    return jwt.sign({id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXP})
+}
+
+//filter req object
+const filterObj = (obj, ...allowFields) => {
+    const newObj = {}
+     Object.keys(obj).forEach(el => {
+        if(allowFields.includes(el)) newObj[el] = obj[el]
+    })
+    return newObj
 }
 
 //description => Login
@@ -40,20 +50,24 @@ exports.loginUser = catchAsync(async (req,res) => {
 })
 
 exports.registerUser = catchAsync(async (req,res,next) => {
-    const {name,email,password,confirmPassword} = req.body;   
-    
-    let store = await Store.findOne({email});
-    if(store){
-      return next(new AppError("User with this email already exits",500))
-    }
-    req.body.category = "undefined"
-    req.body.address = "undefined"
+    const {username,email} = req.body;
 
-    store = new Store(req.body)
-    await store.save();
+    //check if username already exits
+    let user = await User.findOne({username});
+    if(user) return next(new AppError("Username has already been taken by another user",400))
+
+    //check if username already exits
+     user = await User.findOne({email});    
+    if(user){
+      return next(new AppError("User with this email already exits",400))
+    }
+    const Obj = filterObj(req.body, "username","email","password","confirmPassword") 
+    console.log(Obj) 
+    user = new User(Obj)
+    await user.save();
 
     // jwt
-    const token = jwtSign(store.id)
+    const token = jwtSign(user.id)
 
     //create cookie options
     const cookieOptions = {

@@ -3,7 +3,7 @@ const config = require("config");
 const AppError = require("../util/appError")
 const catchAsync = require("../util/catchAsync")
 const {promisify} = require("util")
-const Store = require("../model/Store")
+const User = require("../model/User")
 
 
 module.exports =  catchAsync(async (req,res,next) => {
@@ -20,7 +20,7 @@ module.exports =  catchAsync(async (req,res,next) => {
     
     //check if token is valid
     const decode = await promisify(jwt.verify)(token,process.env.JWT_SECRET);
-    const currentUser = await Store.findById(decode.id)
+    const currentUser = await User.findById(decode.id)
    
     //check if user with this token still exist
     if(!currentUser){
@@ -31,6 +31,6 @@ module.exports =  catchAsync(async (req,res,next) => {
     if(currentUser.changePasswordAfter(decode.iat)){
         return next(new AppError("You recently changed your password, pls re-login to continue",404))
     }
-    req.store = currentUser
+    req.user = currentUser
     next()    
 })
