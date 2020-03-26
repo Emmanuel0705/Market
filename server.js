@@ -5,4 +5,11 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" })
 connectDb();
 const PORT = process.env.PORT || 5000
-app.listen(PORT,(console.log(`app is running on port ${PORT}`)))
+const server = app.listen(PORT,(console.log(`app is running on port ${PORT}`)))
+
+process.on("SIGTERM", () => {
+     console.log('SIGTERM RECIEVED')
+     server.close( () => {
+         console.log("shutting down")
+     })
+})
