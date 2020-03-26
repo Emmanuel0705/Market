@@ -54,7 +54,6 @@ exports.createStore = catchAsync(async (req,res,next) => {
     if(req.body.address) store.address = req.body.address
     if(req.body.name) store.name = req.body.name
     store.user = req.user.id
-    console.log(store)
     const newStore = new Store(store)
      await newStore.save()
 

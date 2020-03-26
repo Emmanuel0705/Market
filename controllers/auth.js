@@ -61,8 +61,7 @@ exports.registerUser = catchAsync(async (req,res,next) => {
     if(user){
       return next(new AppError("User with this email already exits",400))
     }
-    const Obj = filterObj(req.body, "username","email","password","confirmPassword") 
-    console.log(Obj) 
+    const Obj = filterObj(req.body, "username","email","password","confirmPassword")
     user = new User(Obj)
     await user.save();
 
