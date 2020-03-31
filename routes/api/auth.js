@@ -4,9 +4,6 @@ const {check} = require("express-validator")
 const auth = require('../../middleware/auth')
 const {getUser,loginUser} = require("../../controllers/auth")
 
-router.route("/").get(auth,getUser).post([
-    check("email","Please Input a Valid Email").isEmail(),
-    check('password',"password Is Required").not().isEmpty()
-],loginUser)
+router.route("/").get(auth,getUser).post(loginUser)
 
 module.exports = router

@@ -6,6 +6,7 @@ const User = require("../../model/User")
 const NewsLetter = require("../../model/newsLetter")
 
 const newsLetter = catchAsync(async (req,res,next) => {
+        console.log("ffff")
     const user = await User.findOne({email:req.body.email})
     if(user) return next(new AppError(`Youre already a member of  this platform`,400))
     

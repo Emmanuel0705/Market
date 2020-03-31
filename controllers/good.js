@@ -1,11 +1,10 @@
-const path = require('path');
 const Good = require("../model/Good")
 const Category = require("../model/Category")
 const apiFeature = require("../util/apiFeatures")
-const crypto = require('crypto');
 const Store = require("../model/Store")
 const catchAsync = require("../util/catchAsync")
 const AppError = require("../util/appError")
+const imgUploading = require("../util/imageUploading")
 
 //=> fetch all goods
 exports.getGoods = catchAsync(async (req,res,next) => {
@@ -53,49 +52,24 @@ exports.addGood = catchAsync(async (req,res,next) => {
         return next(new AppError("Unatorized",501))
     }
 
-    if(req.files){
-        let imageName = [];
-        req.body.images = []; 
-        
-        if(req.files.image.length >= 1){
-            
-            // ** multiple image uploading 
-            req.files.image.forEach( img => {               
-            
-                if(!img.mimetype.startsWith('image')){
-                    return next(new AppError("all files selected must be image",500))
-                }
+    if(req.files){      
+        req.body.images = [];
 
-                // ** Storing Image Name     
-                imageName = `photo_${crypto.randomBytes(12)
-                    .toString("hex")}${path
-                    .parse(img.name).ext}` 
-
-                //  ** upload file     
-                img.mv(`./upload/images/${imageName}`)
-                
-                req.body.images.push(imageName)
-                
+        if(req.files.image.length >= 1){            
+            // MULTIPLE UPLOAD
+            req.files.image.forEach( img => {
+                const imgName = imgUploading(img)
+                req.body.images.push(imgName)                
             });
                             
         }else{
-            // ** multiple image uploading            
-            if(!req.files.image.mimetype.startsWith('image')){
-                return next(new AppError("file selected must be an image",500))
-            }
-
-            //  ** Storing Image Name     
-            imageName = `photo_${crypto.randomBytes(12)
-                .toString("hex")}${path
-                .parse(req.files.image.name).ext}` 
-
-            //  ** upload file     
-            req.files.image.mv(`./upload/images/${imageName}`)
-            
-            req.body.images.push(imageName)
+            // SINGLE UPLOAD
+            const imgName = imgUploading(req.files.image)
+            req.body.images.push(imgName)
             
         }
     }
+    console.log(req.body.images)
 
     if(req.body.availableColor){
         req.body.availableColor = req.body.availableColor.split(",").map(color => color.trim())
